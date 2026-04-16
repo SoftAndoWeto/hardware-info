@@ -1,5 +1,4 @@
-fn main() -> hardware_info::Result<()> {
-    let info = hardware_info::get_hardware_info()?;
+fn main() {
+    let info = hardware_info::hw::get_hw_info();
     println!("{info:#?}");
-    Ok(())
 }
