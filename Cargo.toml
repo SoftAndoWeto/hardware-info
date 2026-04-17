@@ -7,6 +7,9 @@ license = "MIT"
 repository = "https://github.com/SoftAndoWeto/hardware-info"
 authors = ["Ilya Karasev <iosdsbb@gmail.com>"]
 keywords = ["hardware", "cpu", "gpu", "bios", "ram"]
+rust-version = "1.85"
+readme = "README.md"
+homepage = "https://github.com/SoftAndoWeto/hardware-requiem"
 
 [dependencies]
 nvml-wrapper = "0.10"
