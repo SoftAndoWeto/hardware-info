@@ -43,10 +43,25 @@ pub fn get_cpu_info() -> HwResult<CpuInfo> {
         .ok_or_else(|| "sysinfo returned no CPU records".to_string())?;
 
     Ok(CpuInfo {
-        name: proc.brand().trim().to_string(),
-        identifier: format!("{} - {}", proc.vendor_id(), proc.name()),
+        name: normalize_cpu_brand(proc.brand()),
+        identifier: compose_cpu_identifier(proc.vendor_id(), proc.name()),
         processor_id: None,
-        vendor_frequency: (1000000 * proc.frequency()),
+        vendor_frequency: mhz_to_hz(proc.frequency()),
         physical_processor_count: num_cpus::get_physical(),
     })
 }
+
+fn normalize_cpu_brand(brand: &str) -> String {
+    brand.trim().to_string()
+}
+
+fn compose_cpu_identifier(vendor_id: &str, cpu_name: &str) -> String {
+    format!("{vendor_id} - {cpu_name}")
+}
+
+fn mhz_to_hz(mhz: u64) -> u64 {
+    mhz.saturating_mul(1_000_000)
+}
+
+#[cfg(test)]
+mod tests;
