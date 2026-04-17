@@ -639,6 +639,10 @@ fn diagonal_inches(width_cm: Option<u8>, height_cm: Option<u8>) -> Option<f32> {
 
 #[cfg(target_os = "windows")]
 fn monitor_hardware_id(device_id: &str) -> Option<String> {
+    if let Some((_, rest)) = device_id.split_once("DISPLAY#") {
+        return rest.split('#').next().map(str::to_string);
+    }
+
     let mut parts = device_id.split('\\');
     match (parts.next(), parts.next()) {
         (Some(prefix), Some(hardware_id)) if prefix.eq_ignore_ascii_case("MONITOR") => {
@@ -697,6 +701,12 @@ mod tests {
     fn parses_monitor_hardware_id() {
         assert_eq!(
             monitor_hardware_id(r"MONITOR\SAM71E7\{4d36e96e-e325-11ce-bfc1-08002be10318}"),
+            Some("SAM71E7".to_string())
+        );
+        assert_eq!(
+            monitor_hardware_id(
+                r"\\?\DISPLAY#SAM71E7#5&22264ea&1&UID4353#{e6f07b5f-ee97-4a90-b076-33f57bf4eaa7}"
+            ),
             Some("SAM71E7".to_string())
         );
     }
