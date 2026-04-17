@@ -9,10 +9,8 @@ authors = ["Ilya Karasev <iosdsbb@gmail.com>"]
 keywords = ["hardware", "cpu", "gpu", "bios", "ram"]
 
 [dependencies]
-num_cpus = "1"
 nvml-wrapper = "0.10"
 serde = { version = "1", features = ["derive"] }
-sysinfo = "0.30"
 
 [target.'cfg(windows)'.dependencies]
 windows = { version = "0.62", features = [
