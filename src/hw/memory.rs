@@ -11,6 +11,7 @@ use super::smbios::{parse_smbios_structures, read_raw_smbios_table, smbios_table
 /// - memory_type: A string representing the type of memory (e.g., "DDR4").
 /// - capacity: An unsigned 16-bit integer representing the memory capacity in megabytes.
 /// - clock_speed: An unsigned 16-bit integer representing the memory clock speed in megahertz.
+/// - vendor/manufacturer and module identifiers when SMBIOS provides them.
 #[derive(Debug, Serialize, Deserialize)]
 pub struct MemoryInfo {
     #[serde(rename = "type")]
@@ -18,6 +19,16 @@ pub struct MemoryInfo {
     pub capacity: u16,
     #[serde(rename = "clockSpeed")]
     pub clock_speed: u16,
+    pub vendor: Option<String>,
+    pub manufacturer: Option<String>,
+    #[serde(rename = "serialNumber")]
+    pub serial_number: Option<String>,
+    #[serde(rename = "partNumber")]
+    pub part_number: Option<String>,
+    #[serde(rename = "deviceLocator")]
+    pub device_locator: Option<String>,
+    #[serde(rename = "bankLocator")]
+    pub bank_locator: Option<String>,
 }
 
 /// Retrieves a list of memory information from SMBIOS type 17 structures.
@@ -49,11 +60,28 @@ fn parse_memory_info_from_smbios(raw_smbios: &[u8]) -> HwResult<Vec<MemoryInfo>>
             continue;
         };
         let memory_type = memory_type_name(structure.formatted_byte(0x12).unwrap_or_default());
+        let manufacturer = structure
+            .formatted_byte(0x17)
+            .and_then(|index| structure.string_at(index));
 
         memory.push(MemoryInfo {
             memory_type,
             capacity,
             clock_speed,
+            vendor: manufacturer.clone(),
+            manufacturer,
+            serial_number: structure
+                .formatted_byte(0x18)
+                .and_then(|index| structure.string_at(index)),
+            part_number: structure
+                .formatted_byte(0x1a)
+                .and_then(|index| structure.string_at(index)),
+            device_locator: structure
+                .formatted_byte(0x10)
+                .and_then(|index| structure.string_at(index)),
+            bank_locator: structure
+                .formatted_byte(0x11)
+                .and_then(|index| structure.string_at(index)),
         });
     }
 
