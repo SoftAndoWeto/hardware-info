@@ -155,5 +155,4 @@ fn memory_type_name(code: u8) -> String {
 }
 
 #[cfg(test)]
-#[path = "memory/tests.rs"]
 mod tests;
