@@ -1,9 +1,8 @@
 use serde::{Deserialize, Serialize};
 
-use super::{
-    smbios::{join_non_empty, parse_smbios_structures, read_raw_smbios_table, smbios_table_bytes},
-    HwResult,
-};
+#[cfg(any(windows, target_os = "linux"))]
+use super::smbios::{join_non_empty, parse_smbios_structures, read_raw_smbios_table, smbios_table_bytes};
+use super::HwResult;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct BiosInfo {
@@ -12,18 +11,18 @@ pub struct BiosInfo {
     pub name: String,
 }
 
-#[cfg(target_os = "windows")]
+#[cfg(any(windows, target_os = "linux"))]
 pub fn get_bios_info() -> HwResult<BiosInfo> {
     let smbios = read_raw_smbios_table()?;
     parse_bios_info_from_smbios(&smbios)
 }
 
-#[cfg(not(target_os = "windows"))]
+#[cfg(not(any(windows, target_os = "linux")))]
 pub fn get_bios_info() -> HwResult<BiosInfo> {
-    Err("BIOS collection is only implemented on Windows".to_string())
+    Err("BIOS collection is not implemented for this platform".to_string())
 }
 
-#[cfg(target_os = "windows")]
+#[cfg(any(windows, target_os = "linux"))]
 fn parse_bios_info_from_smbios(raw_smbios: &[u8]) -> HwResult<BiosInfo> {
     let table = smbios_table_bytes(raw_smbios)?;
     let structures = parse_smbios_structures(table);
