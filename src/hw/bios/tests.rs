@@ -1,4 +1,4 @@
-use super::*;
+use super::parser::parse_bios_info_from_smbios;
 
 #[test]
 fn parses_bios_and_system_uuid_from_smbios() {
