@@ -6,6 +6,7 @@
 
 pub mod bios;
 pub mod cpu;
+#[cfg(any(windows, target_os = "linux"))]
 pub mod display;
 pub mod gpu;
 pub mod memory;
@@ -17,10 +18,12 @@ use serde::{Deserialize, Serialize};
 
 pub use bios::{get_bios_info, BiosInfo};
 pub use cpu::{get_cpu_info, CpuInfo};
+#[cfg(any(windows, target_os = "linux"))]
 pub use display::{get_display, DisplayInfo};
 pub use gpu::{get_gpu, GpuInfo};
 pub use memory::{get_memory_info, MemoryInfo};
 pub use motherboard::{get_motherboard_info, MotherboardInfo};
+#[cfg(any(windows, target_os = "linux"))]
 pub use storage::{get_storage, DiskInfo};
 
 pub type HwResult<T> = std::result::Result<T, String>;
@@ -33,6 +36,7 @@ pub struct HardWareInfo {
     pub memory: Vec<MemoryInfo>,
     pub storage: Vec<DiskInfo>,
     pub gpu: Vec<GpuInfo>,
+    #[cfg(any(windows, target_os = "linux"))]
     pub display: Vec<DisplayInfo>,
     pub errors: Vec<CollectionError>,
 }
@@ -43,7 +47,6 @@ pub struct CollectionError {
     pub message: String,
 }
 
-#[cfg(target_os = "windows")]
 pub fn get_hw_info() -> HardWareInfo {
     let mut errors = Vec::new();
 
@@ -51,8 +54,10 @@ pub fn get_hw_info() -> HardWareInfo {
     let motherboard = collect_optional("motherboard", get_motherboard_info(), &mut errors);
     let cpu = collect_optional("cpu", get_cpu_info(), &mut errors);
     let memory = collect_list("memory", get_memory_info(), &mut errors);
+    #[cfg(any(windows, target_os = "linux"))]
     let storage = collect_list("storage", get_storage(), &mut errors);
     let gpu = collect_list("gpu", get_gpu(), &mut errors);
+    #[cfg(any(windows, target_os = "linux"))]
     let display = collect_list("display", get_display(), &mut errors);
 
     HardWareInfo {
@@ -60,8 +65,10 @@ pub fn get_hw_info() -> HardWareInfo {
         motherboard,
         cpu,
         memory,
+        #[cfg(any(windows, target_os = "linux"))]
         storage,
         gpu,
+        #[cfg(any(windows, target_os = "linux"))]
         display,
         errors,
     }

@@ -1,7 +1,7 @@
 use super::*;
 
 #[test]
-#[cfg(target_os = "windows")]
+#[cfg(windows)]
 fn extracts_table_bytes_from_raw_smbios_data() {
     let table = [1, 2, 3, 4, 5];
     let mut raw_smbios = vec![0, 3, 4, 0];
@@ -12,7 +12,7 @@ fn extracts_table_bytes_from_raw_smbios_data() {
 }
 
 #[test]
-#[cfg(target_os = "windows")]
+#[cfg(windows)]
 fn rejects_too_short_raw_smbios_data() {
     let error = smbios_table_bytes(&[0, 1, 2, 3]).unwrap_err();
 
@@ -20,7 +20,7 @@ fn rejects_too_short_raw_smbios_data() {
 }
 
 #[test]
-#[cfg(target_os = "windows")]
+#[cfg(windows)]
 fn falls_back_to_remaining_table_bytes_when_declared_length_is_too_large() {
     let table = [9, 8, 7];
     let mut raw_smbios = vec![0, 3, 4, 0];
@@ -31,7 +31,6 @@ fn falls_back_to_remaining_table_bytes_when_declared_length_is_too_large() {
 }
 
 #[test]
-#[cfg(target_os = "windows")]
 fn parses_single_smbios_structure_with_strings() {
     let table = [
         0x02, 0x08, 0x34, 0x12, 0x01, 0x02, 0x78, 0x56, b'M', b'S', b'I', 0x00, b'Z', b'7', b'9',
@@ -51,7 +50,6 @@ fn parses_single_smbios_structure_with_strings() {
 }
 
 #[test]
-#[cfg(target_os = "windows")]
 fn parses_multiple_structures_and_stops_at_end_of_table_marker() {
     let table = [
         0x00, 0x05, 0x00, 0x00, 0x01, b'A', 0x00, 0x00, 0x01, 0x05, 0x01, 0x00, 0x01, b'B', 0x00,
@@ -66,7 +64,6 @@ fn parses_multiple_structures_and_stops_at_end_of_table_marker() {
 }
 
 #[test]
-#[cfg(target_os = "windows")]
 fn stops_on_invalid_structure_length() {
     let table = [0x02, 0x03, 0x00, 0x00, 0x00, 0x00];
 
@@ -74,7 +71,6 @@ fn stops_on_invalid_structure_length() {
 }
 
 #[test]
-#[cfg(target_os = "windows")]
 fn stops_on_missing_string_terminator() {
     let table = [0x02, 0x04, 0x00, 0x00, b'A', 0x00];
 
@@ -82,7 +78,6 @@ fn stops_on_missing_string_terminator() {
 }
 
 #[test]
-#[cfg(target_os = "windows")]
 fn reads_formatted_values() {
     let table = [0x02, 0x08, 0x00, 0x00, 0x78, 0x56, 0x34, 0x12, 0x00, 0x00];
     let structures = parse_smbios_structures(&table);
@@ -95,7 +90,6 @@ fn reads_formatted_values() {
 }
 
 #[test]
-#[cfg(target_os = "windows")]
 fn formats_smbios_uuid() {
     let table = [
         0x01, 0x18, 0x00, 0x00, 0, 0, 0, 0, 0x67, 0x45, 0x23, 0x01, 0xab, 0x89, 0xef, 0xcd, 0x01,
@@ -110,7 +104,6 @@ fn formats_smbios_uuid() {
 }
 
 #[test]
-#[cfg(target_os = "windows")]
 fn skips_empty_or_unset_uuid() {
     let mut zero_uuid_table = [
         0x01, 0x18, 0x00, 0x00, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -124,7 +117,6 @@ fn skips_empty_or_unset_uuid() {
 }
 
 #[test]
-#[cfg(target_os = "windows")]
 fn joins_only_non_empty_values() {
     assert_eq!(
         join_non_empty(&["A".to_string(), String::new(), "B".to_string()]),
