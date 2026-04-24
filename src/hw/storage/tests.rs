@@ -1,4 +1,12 @@
-use super::*;
+#[cfg(windows)]
+use std::mem::size_of;
+#[cfg(windows)]
+use windows::Win32::System::Ioctl::STORAGE_DEVICE_DESCRIPTOR;
+
+#[cfg(windows)]
+use super::windows::{is_not_found_message, read_descriptor_string, wide_null};
+#[cfg(target_os = "linux")]
+use super::linux::sectors_to_bytes;
 
 #[test]
 #[cfg(windows)]
